@@ -18,6 +18,11 @@ func UpdateJobById(c *gin.Context) {
 		c.JSON(500, gin.H{"error": "Database connection not set"})
 	}
 
+	if err := c.ShouldBindJSON(&jobs); err != nil {
+		c.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
+
 	result, err := db.Exec(query, jobs.Name, jobs.Description, jobs.Company, jobs.Location, jobs.Salary, jobs.Remote, jobs.CompanyId)
 
 	if err != nil {
@@ -25,7 +30,7 @@ func UpdateJobById(c *gin.Context) {
 	}
 
 	c.JSON(200, gin.H{
-		"message": "this func update job in database",
+		"message": "job has been updated in database",
 		"result":  result,
 	})
 }

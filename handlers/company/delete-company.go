@@ -6,26 +6,25 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func DeleteJob(c *gin.Context) {
-
+func DeleteCompany(c *gin.Context) {
 	db := database.GetDB()
+
 	id := c.Param("id")
-
-	query := "DELETE FROM jobs WHERE id = ?"
-
 	if db == nil {
 		c.JSON(500, gin.H{"error": "Database connection not set"})
 		return
 	}
 
+	query := "DELETE FROM company WHERE id = ?"
+
 	_, err := db.Exec(query, id)
 
 	if err != nil {
-		c.JSON(500, gin.H{"error": "Could not Deletin job" + err.Error()})
+		c.JSON(500, gin.H{"error": "Could not delete company" + err.Error()})
 		return
 	}
 
 	c.JSON(200, gin.H{
-		"message": "job has been deleted",
+		"message": "company has been deleted",
 	})
 }
