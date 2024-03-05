@@ -6,7 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func SetupJobRoutes(router *gin.Engine) {
+func JobRoutes(router *gin.Engine) {
 	jobRoutes := router.Group("/jobs")
 	{
 		jobRoutes.GET("/", handlers.ListJob)

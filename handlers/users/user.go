@@ -9,7 +9,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func ensureUsersTableExists(db *sql.DB) error {
+func EnsureUsersTableExists(db *sql.DB) error {
 	createTableSQL := `
 		CREATE TABLE IF NOT EXISTS users (
 			id SERIAL PRIMARY KEY,
@@ -34,7 +34,7 @@ func CreateUser(c *gin.Context) {
 		return
 	}
 
-	err := ensureUsersTableExists(db)
+	err := EnsureUsersTableExists(db)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error creating users table: " + err.Error()})
 		return
