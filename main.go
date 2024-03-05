@@ -10,12 +10,11 @@ import (
 func main() {
 
 	database.InitDb()
+	router := gin.Default()
 
-	r := gin.Default()
+	routes.SetupJobRoutes(router)
 
-	routes.SetupJobRoutes(r)
+	routes.SetupUsersRoutes(router)
 
-	routes.SetupUsersRoutes(r)
-
-	r.Run(":3000")
+	router.Run(":3000")
 }

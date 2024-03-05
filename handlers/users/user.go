@@ -3,20 +3,42 @@ package handlers
 import (
 	"database/sql"
 	"net/http"
+	"vagas/database"
 	"vagas/models"
 
 	"github.com/gin-gonic/gin"
-	_ "github.com/lib/pq"
 )
 
-type User struct {
-	Name  string `json:"name"`
-	Email string `json:"email"`
+func ensureUsersTableExists(db *sql.DB) error {
+	createTableSQL := `
+		CREATE TABLE IF NOT EXISTS users (
+			id SERIAL PRIMARY KEY,
+			name VARCHAR(255) NOT NULL,
+			email VARCHAR(255) NOT NULL
+		)
+	`
+	_, err := db.Exec(createTableSQL)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
-var db *sql.DB
-
 func CreateUser(c *gin.Context) {
+
+	db := database.GetDB()
+
+	if db == nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Database connection not set"})
+		return
+	}
+
+	err := ensureUsersTableExists(db)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error creating users table: " + err.Error()})
+		return
+	}
 
 	var user models.User
 
@@ -30,28 +52,17 @@ func CreateUser(c *gin.Context) {
 		return
 	}
 
-	c.JSON(201, gin.H{
-		"message": "user create sucessfully",
-		"user":    user,
-	})
-}
+	query := "INSERT INTO users (name, email) VALUES ($1, $2)"
 
-func Users(c *gin.Context) {
-
-	_, err := db.Exec("SELECT * FROM users")
+	result, err := db.Exec(query, user.Name, user.Email)
 
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": "some error ocurred ",
-		})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error inserting user into database" + err.Error()})
+		return
 	}
-	c.JSON(200, gin.H{
-		"message": "List users",
-	})
-}
 
-func ListUserById(c *gin.Context) {
-	c.JSON(201, gin.H{
-		"message": "This route list user by id",
+	c.JSON(http.StatusCreated, gin.H{
+		"message": "User created successfully in database",
+		"user":    result,
 	})
 }

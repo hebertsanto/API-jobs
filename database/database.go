@@ -19,10 +19,9 @@ func InitDb() {
 		panic(err)
 	}
 
-	err = db.Ping()
-	if err != nil {
-		panic(err)
-	}
-
 	fmt.Println("Conected to database successfully!")
+}
+
+func GetDB() *sql.DB {
+	return db
 }
