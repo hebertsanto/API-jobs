@@ -9,10 +9,9 @@ import (
 func JobRoutes(router *gin.Engine) {
 	jobRoutes := router.Group("/jobs")
 	{
-		jobRoutes.GET("/", handlers.ListJob)
-		jobRoutes.GET("/:id", handlers.ListJob)
 		jobRoutes.POST("/", handlers.PublicJob)
-		jobRoutes.PUT("/:id", handlers.ListJob)
-		jobRoutes.DELETE("/:id", handlers.ListJob)
+		jobRoutes.GET("/:id", handlers.GetJobById)
+		jobRoutes.DELETE("/:id", handlers.DeleteJob)
+		jobRoutes.PUT("/:id", handlers.UpdateJobById)
 	}
 }

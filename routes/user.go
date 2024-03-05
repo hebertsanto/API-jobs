@@ -11,5 +11,6 @@ func UsersRoutes(router *gin.Engine) {
 	userRoutes := router.Group("/users")
 	{
 		userRoutes.POST("/", handlers.CreateUser)
+		userRoutes.POST("/:id", handlers.GetUserById)
 	}
 }
