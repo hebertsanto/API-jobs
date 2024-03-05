@@ -10,7 +10,7 @@ import (
 )
 
 func CreateTableUsersIfNotExist(db *sql.DB) error {
-	createTableSQL := `
+	createTableQuerySQL := `
 		CREATE TABLE IF NOT EXISTS users (
 			id SERIAL PRIMARY KEY,
 			name VARCHAR(255) NOT NULL,
@@ -19,7 +19,7 @@ func CreateTableUsersIfNotExist(db *sql.DB) error {
 			cpf VARCHAR(255) NOT NULL
 		)
 	`
-	_, err := db.Exec(createTableSQL)
+	_, err := db.Exec(createTableQuerySQL)
 	if err != nil {
 		return err
 	}
