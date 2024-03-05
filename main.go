@@ -1,6 +1,7 @@
 package main
 
 import (
+	"os"
 	"vagas/database"
 	"vagas/routes"
 
@@ -22,5 +23,11 @@ func main() {
 
 	routes.UserProfileRoutes(router)
 
-	router.Run(":3000")
+	port := os.Getenv("PORT")
+
+	if port == "" {
+		port = "3000"
+	}
+
+	router.Run(":" + port)
 }

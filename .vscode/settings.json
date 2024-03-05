@@ -1,0 +1,13 @@
+{
+    "go.toolsEnvVars": {
+        "GO111MODULE": "on"
+    },
+    "go.useLanguageServer": true,
+    "go.lintTool": "golangci-lint",
+    "go.lintFlags": [],
+    "go.formatTool": "goimports",
+    "go.formatFlags": [],
+    "go.vetOnSave": "off",
+    "go.goroot": "",
+    "go.gopath": ""
+}
