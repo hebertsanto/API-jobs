@@ -1,6 +1,7 @@
 package main
 
 import (
+	"vagas/database"
 	"vagas/routes"
 
 	"github.com/gin-gonic/gin"
@@ -8,6 +9,7 @@ import (
 
 func main() {
 
+	database.InitDb()
 	r := gin.Default()
 
 	routes.SetupJobRoutes(r)
