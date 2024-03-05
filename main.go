@@ -10,6 +10,7 @@ import (
 func main() {
 
 	database.InitDb()
+
 	r := gin.Default()
 
 	routes.SetupJobRoutes(r)

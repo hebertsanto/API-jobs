@@ -7,6 +7,7 @@ import (
 )
 
 func SetupUsersRoutes(router *gin.Engine) {
+
 	userRoutes := router.Group("/users")
 	{
 		userRoutes.GET("/", handlers.Users)
