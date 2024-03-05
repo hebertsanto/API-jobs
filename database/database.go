@@ -3,6 +3,7 @@ package database
 import (
 	"database/sql"
 	"fmt"
+	"os"
 
 	_ "github.com/lib/pq"
 )
@@ -13,7 +14,8 @@ func InitDb() {
 
 	var err error
 
-	db, err = sql.Open("postgres", "postgresql://docker:docker@localhost:8080/jobs?sslmode=disable")
+	DB_URL := os.Getenv("DATABASE_URL")
+	db, err = sql.Open("postgres", DB_URL)
 
 	if err != nil {
 		panic(err)
