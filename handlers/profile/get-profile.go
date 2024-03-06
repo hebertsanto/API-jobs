@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"vagas/database"
+	"vagas/utils"
 
 	"github.com/gin-gonic/gin"
 )
@@ -10,6 +11,11 @@ func GetProfile(c *gin.Context) {
 	db := database.GetDB()
 
 	id := c.Param("id")
+
+	if !utils.VerifyExistenceInDatabase(id, "profile") {
+		c.JSON(404, gin.H{"error": "Profile_id not found in database"})
+		return
+	}
 
 	if db == nil {
 		c.JSON(500, gin.H{"error": "Database connection not set"})

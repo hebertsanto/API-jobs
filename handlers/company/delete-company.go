@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"vagas/database"
+	"vagas/utils"
 
 	"github.com/gin-gonic/gin"
 )
@@ -15,6 +16,10 @@ func DeleteCompany(c *gin.Context) {
 		return
 	}
 
+	if !utils.VerifyExistenceInDatabase(id, "profile") {
+		c.JSON(404, gin.H{"error": "Profile_id not found in database"})
+		return
+	}
 	query := "DELETE FROM company WHERE id = ?"
 
 	_, err := db.Exec(query, id)

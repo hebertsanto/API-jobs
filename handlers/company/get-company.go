@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"vagas/database"
+	"vagas/utils"
 
 	"github.com/gin-gonic/gin"
 )
@@ -12,6 +13,11 @@ func GetCompany(c *gin.Context) {
 	id := c.Param("id")
 	if db == nil {
 		c.JSON(500, gin.H{"error": "Database connection not set"})
+		return
+	}
+
+	if !utils.VerifyExistenceInDatabase(id, "profile") {
+		c.JSON(404, gin.H{"error": "Profile_id not found in database"})
 		return
 	}
 

@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"vagas/database"
+	"vagas/utils"
 
 	"github.com/gin-gonic/gin"
 )
@@ -11,6 +12,10 @@ func DeleteJob(c *gin.Context) {
 	db := database.GetDB()
 	id := c.Param("id")
 
+	if !utils.VerifyExistenceInDatabase(id, "jobs") {
+		c.JSON(404, gin.H{"error": "Job_id not found in database"})
+		return
+	}
 	query := "DELETE FROM jobs WHERE id = ?"
 
 	if db == nil {
@@ -18,10 +23,10 @@ func DeleteJob(c *gin.Context) {
 		return
 	}
 
-	_, err := db.Exec(query, id)
-
+	var err error
+	_, err = db.Exec(query, id)
 	if err != nil {
-		c.JSON(500, gin.H{"error": "Could not Deletin job" + err.Error()})
+		c.JSON(500, gin.H{"error": "Could not delete company: " + err.Error()})
 		return
 	}
 
