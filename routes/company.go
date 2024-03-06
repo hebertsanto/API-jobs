@@ -12,7 +12,7 @@ func CompanyRoutes(router *gin.Engine) {
 	{
 		company.GET("/:id", handlers.GetCompany)
 		company.POST("/", handlers.PulishCompany)
-		company.PUT("/:id")
+		company.PUT("/:id", handlers.UpdateCompany)
 		company.DELETE("/:id", handlers.DeleteCompany)
 	}
 }

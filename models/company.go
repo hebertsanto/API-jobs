@@ -1,7 +1,7 @@
 package models
 
 type Company struct {
-	ID             int    `json:"id"`
+	ID             string `json:"id"`
 	Name           string `json:"name"`
 	Owner          string `json:"owner"`
 	Cnpj           string `json:"cnpj"`

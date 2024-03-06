@@ -22,6 +22,7 @@ func CreateTableQuerySql(db *sql.DB) error {
 			comapany_id VARCHAR(255) NOT NULL,
 			published_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 			updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+			FOREIGN KEY (company_id) REFERENCES company (id)
 		)
 	`
 	_, err := db.Exec(createTableQuerySQL)
@@ -33,7 +34,7 @@ func CreateTableQuerySql(db *sql.DB) error {
 
 }
 
-func PublicJob(c *gin.Context) {
+func PublishJob(c *gin.Context) {
 	db := database.GetDB()
 
 	if db == nil {
@@ -59,6 +60,11 @@ func PublicJob(c *gin.Context) {
 
 	result, err := db.Exec(query, job.Name, job.Description, job.Company, job.Location, job.Salary, job.Remote, job.CompanyId)
 
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error inserting job: " + err.Error()})
+
+		return
+	}
 	c.JSON(201, gin.H{
 		"message": "This route Public a job",
 		"result":  result,
