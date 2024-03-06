@@ -25,9 +25,9 @@ func CreateUser(c *gin.Context) {
 		c.JSON(400, gin.H{"error": "some error ocurred validating data" + err.Error()})
 	}
 
-	userRepository := &repository.NewUserRepository{DB: db}
-
+	userRepository := repository.NewUserRepository()
 	err := userRepository.CreateTableUsersIfNotExist()
+
 	if err != nil {
 		c.JSON(500, gin.H{"error": "Error creating user table: " + err.Error()})
 		return

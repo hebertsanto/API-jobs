@@ -2,6 +2,8 @@ package repository
 
 import (
 	"database/sql"
+	"log"
+	"vagas/database"
 	"vagas/models"
 )
 
@@ -10,6 +12,12 @@ type NewCompanyRepository struct {
 }
 
 func (c *NewCompanyRepository) CreateTableCompaniesIfNotExist() error {
+	db := database.GetDB()
+
+	if db == nil {
+		log.Fatal("Database not found")
+	}
+
 	query := `
 	CREATE TABLE IF NOT EXISTS company (
 		id SERIAL PRIMARY KEY,
@@ -30,6 +38,12 @@ func (c *NewCompanyRepository) CreateTableCompaniesIfNotExist() error {
 }
 
 func (u *NewCompanyRepository) CreateUser(company models.Company) error {
+
+	db := database.GetDB()
+
+	if db == nil {
+		log.Fatal("Database not found")
+	}
 
 	query := `
 	INSERT INTO company (

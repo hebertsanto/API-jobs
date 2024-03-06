@@ -1,13 +1,32 @@
 package handlers
 
-import "github.com/gin-gonic/gin"
+import (
+	"vagas/database"
+	"vagas/repository"
+	"vagas/services"
 
-func GetUserById(c *gin.Context) {
+	"github.com/gin-gonic/gin"
+)
 
-	id := c.Param("id")
+func GetUsers(c *gin.Context) {
+	db := database.GetDB()
+
+	if db == nil {
+		c.JSON(500, gin.H{"error": "Error connecting to database"})
+		return
+	}
+	userRepository := repository.NewUserRepository()
+	userService := &services.NewUserService{Repo: userRepository}
+
+	users, err := userService.Repo.GetUsers()
+
+	if err != nil {
+		c.JSON(500, gin.H{"error": "Error getting users: " + err.Error()})
+		return
+	}
 
 	c.JSON(200, gin.H{
-		"message": "this fun get user in database",
-		"id":      id,
+		"message": "User found successfully",
+		"users":   users,
 	})
 }

@@ -9,7 +9,7 @@ import (
 )
 
 type NewUserService struct {
-	Repo *repository.NewUserRepository
+	Repo *repository.UserRepository
 }
 
 func (u *NewUserService) CreateUser(c *gin.Context, user models.User) {
@@ -26,12 +26,27 @@ func (u *NewUserService) CreateUser(c *gin.Context, user models.User) {
 		return
 	}
 
-	result, err := u.Repo.CreateUser(user)
+	user, err = u.Repo.CreateUser(user)
+
 	if err != nil {
 		c.JSON(500, gin.H{"error": "Error creating user: " + err.Error()})
 		return
 	}
 
 	c.JSON(201, gin.H{
-		"message": "User created successfully", "result": result})
+		"message": "User created successfully",
+		"user":    user,
+	})
+}
+
+func GetUsers(u *NewUserService) ([]models.User, error) {
+
+	result, err := u.Repo.GetUsers()
+
+	if err != nil {
+		return nil, err
+	}
+
+	return result, nil
+
 }
