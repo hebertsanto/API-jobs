@@ -11,6 +11,7 @@ func DeleteCompany(c *gin.Context) {
 	db := database.GetDB()
 
 	id := c.Param("id")
+
 	if db == nil {
 		c.JSON(500, gin.H{"error": "Database connection not set"})
 		return

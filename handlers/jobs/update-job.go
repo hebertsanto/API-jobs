@@ -45,6 +45,7 @@ func UpdateJobById(c *gin.Context) {
 
 	if err != nil {
 		c.JSON(500, gin.H{"error": "Could not update job" + err.Error()})
+		return
 	}
 
 	c.JSON(200, gin.H{

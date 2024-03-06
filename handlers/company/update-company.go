@@ -27,6 +27,7 @@ func UpdateCompany(c *gin.Context) {
 	validate := validator.New()
 	if err := validate.Struct(company); err != nil {
 		c.JSON(400, gin.H{"error": "some error ocurred validating company data" + err.Error()})
+		return
 	}
 
 	query := `
@@ -49,6 +50,7 @@ func UpdateCompany(c *gin.Context) {
 
 	if err != nil {
 		c.JSON(500, gin.H{"error": "Could not update company" + err.Error()})
+		return
 	}
 
 	c.JSON(200, gin.H{

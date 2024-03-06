@@ -43,6 +43,7 @@ func PulishCompany(c *gin.Context) {
 
 	if err != nil {
 		c.JSON(500, gin.H{"error": "Error creating company table: " + err.Error()})
+		return
 	}
 
 	var company models.Company
@@ -79,6 +80,7 @@ func PulishCompany(c *gin.Context) {
 
 	if err != nil {
 		c.JSON(500, gin.H{"error": "Could not create company" + err.Error()})
+		return
 	}
 
 	c.JSON(200, gin.H{

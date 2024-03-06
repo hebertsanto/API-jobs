@@ -35,6 +35,7 @@ func CreateProfile(c *gin.Context) {
 
 	if db == nil {
 		c.JSON(500, gin.H{"error": "Database connection not set"})
+		return
 	}
 
 	err := CreateTableQuerySql(db)
