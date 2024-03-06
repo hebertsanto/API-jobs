@@ -1,7 +1,7 @@
 package routes
 
 import (
-	handlers "vagas/handlers/users"
+	controllers "vagas/controllers/users"
 
 	"github.com/gin-gonic/gin"
 )
@@ -10,7 +10,7 @@ func UsersRoutes(router *gin.Engine) {
 
 	userRoutes := router.Group("/users")
 	{
-		userRoutes.POST("/", handlers.CreateUser)
-		userRoutes.GET("/all", handlers.GetUsers)
+		userRoutes.POST("/", controllers.CreateUser)
+		userRoutes.GET("/all", controllers.GetUsers)
 	}
 }

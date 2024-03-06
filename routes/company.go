@@ -1,7 +1,7 @@
 package routes
 
 import (
-	handlers "vagas/handlers/company"
+	controllers "vagas/controllers/company"
 
 	"github.com/gin-gonic/gin"
 )
@@ -10,9 +10,9 @@ func CompanyRoutes(router *gin.Engine) {
 
 	company := router.Group("/company")
 	{
-		company.GET("/:id", handlers.GetCompany)
-		company.POST("/", handlers.PulishCompany)
-		company.PUT("/:id", handlers.UpdateCompany)
-		company.DELETE("/:id", handlers.DeleteCompany)
+		company.GET("/:id", controllers.GetCompany)
+		company.POST("/", controllers.PulishCompany)
+		company.PUT("/:id", controllers.UpdateCompany)
+		company.DELETE("/:id", controllers.DeleteCompany)
 	}
 }

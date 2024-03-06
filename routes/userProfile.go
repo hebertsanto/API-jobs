@@ -1,7 +1,7 @@
 package routes
 
 import (
-	handlers "vagas/handlers/profile"
+	controllers "vagas/controllers/profile"
 
 	"github.com/gin-gonic/gin"
 )
@@ -10,7 +10,7 @@ func UserProfileRoutes(router *gin.Engine) {
 
 	profile := router.Group("/profile")
 	{
-		profile.GET("/:id", handlers.GetProfile)
-		profile.POST("/", handlers.CreateProfile)
+		profile.GET("/:id", controllers.GetProfile)
+		profile.POST("/", controllers.CreateProfile)
 	}
 }
