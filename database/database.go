@@ -3,7 +3,7 @@ package database
 import (
 	"database/sql"
 	"fmt"
-	"os"
+	"vagas/config"
 
 	_ "github.com/lib/pq"
 )
@@ -14,8 +14,7 @@ func InitDb() {
 
 	var err error
 
-	DB_URL := os.Getenv("DATABASE_URL")
-	db, err = sql.Open("postgres", DB_URL)
+	db, err = sql.Open("postgres", config.Sc)
 
 	if err != nil {
 		panic("some error ocurred trying to connect to database" + err.Error())
