@@ -2,7 +2,7 @@ package controllers
 
 import (
 	"net/http"
-	"vagas/database"
+	"vagas/infra/errors"
 	"vagas/infra/repository"
 	"vagas/models"
 	"vagas/pkg/logger"
@@ -13,43 +13,36 @@ import (
 )
 
 func CreateUser(c *gin.Context) {
-	db := database.GetDB()
-	if db == nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error connecting to database"})
-		return
-	}
 
 	user := models.User{}
 
 	if err := c.ShouldBindJSON(&user); err != nil {
 		logger.Log.Infof("Payload received in invalid. Payload: %+v\n", user)
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "Payload received in invalid. Payload:" + err.Error(),
-		})
+		errors.HandlerError(c, "BAD_REQUEST", err.Error(), http.StatusBadRequest)
 	}
 
 	validate := validator.New()
 	if err := validate.Struct(user); err != nil {
-		logger.Log.Infof("Error validating user: %s\n", err.Error())
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "some error ocurred validating data" + err.Error(),
-		})
+		logger.Log.Infof("Error validating data user: %s\n", err.Error())
+		errors.HandlerError(c, "BAD_REQUEST", err.Error(), http.StatusBadRequest)
 		return
 	}
 
 	userRepository := repository.NewUserRepository()
 	err := userRepository.CreateTableUsersIfNotExist()
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "could not create user table " + err.Error()})
+		logger.Log.Error("Error creating user table...", err)
+		errors.HandlerError(c, "INTERNAL_SERVER_ERROR", err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	userService := &services.CreateUserService{Repo: userRepository}
+	userService := services.CreateUserService{Repo: userRepository}
 
 	user, err = userService.CreateUser(user)
 
 	if err != nil {
-		c.JSON(500, gin.H{"error": "Error creating user: " + err.Error()})
+		logger.Log.Error("Error creating user...", err)
+		errors.HandlerError(c, "INTERNAL_SERVER_ERROR", err.Error(), http.StatusInternalServerError)
 		return
 	}
 
