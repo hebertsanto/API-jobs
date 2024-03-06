@@ -7,11 +7,11 @@ import (
 	"vagas/pkg/logger"
 )
 
-type NewUserService struct {
+type CreateUserService struct {
 	Repo *repository.UserRepository
 }
 
-func (u *NewUserService) CreateUser(user models.User) (models.User, error) {
+func (u *CreateUserService) CreateUser(user models.User) (models.User, error) {
 
 	err := u.Repo.CreateTableUsersIfNotExist()
 
@@ -36,7 +36,7 @@ func (u *NewUserService) CreateUser(user models.User) (models.User, error) {
 	return user, nil
 }
 
-func GetUsers(u *NewUserService) ([]models.User, error) {
+func GetUsers(u *CreateUserService) ([]models.User, error) {
 
 	result, err := u.Repo.GetUsers()
 

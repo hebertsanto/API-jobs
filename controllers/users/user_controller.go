@@ -44,7 +44,7 @@ func CreateUser(c *gin.Context) {
 		return
 	}
 
-	userService := &services.NewUserService{Repo: userRepository}
+	userService := &services.CreateUserService{Repo: userRepository}
 
 	user, err = userService.CreateUser(user)
 

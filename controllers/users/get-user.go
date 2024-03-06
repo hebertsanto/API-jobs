@@ -16,7 +16,7 @@ func GetUsers(c *gin.Context) {
 		return
 	}
 	userRepository := repository.NewUserRepository()
-	userService := &services.NewUserService{Repo: userRepository}
+	userService := &services.CreateUserService{Repo: userRepository}
 
 	users, err := userService.Repo.GetUsers()
 
