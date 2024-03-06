@@ -1,84 +1,38 @@
 package handlers
 
 import (
-	"database/sql"
-	"net/http"
 	"vagas/database"
 	"vagas/models"
+	"vagas/repository"
+	"vagas/services"
 
 	"github.com/gin-gonic/gin"
-	"github.com/go-playground/validator/v10"
 )
-
-func CreateTableUsersIfNotExist(db *sql.DB) error {
-	createTableQuerySQL := `
-		CREATE TABLE IF NOT EXISTS users (
-			id SERIAL PRIMARY KEY,
-			name VARCHAR(255) NOT NULL,
-			password VARCHAR(255) NOT NULL,
-			email VARCHAR(255) NOT NULL
-			cpf VARCHAR(255) NOT NULL
-		)
-	`
-	_, err := db.Exec(createTableQuerySQL)
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
 
 func CreateUser(c *gin.Context) {
 
 	db := database.GetDB()
 
 	if db == nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Database connection not set"})
+		c.JSON(500, gin.H{"error": "Error connecting to database"})
 		return
+
 	}
 
-	err := CreateTableUsersIfNotExist(db)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error creating users table: " + err.Error()})
-		return
-	}
-
-	var user models.User
+	user := models.User{}
 
 	if err := c.ShouldBindJSON(&user); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	validate := validator.New()
-	if err := validate.Struct(user); err != nil {
 		c.JSON(400, gin.H{"error": "some error ocurred validating data" + err.Error()})
-		return
 	}
 
-	query := `
-	  INSERT INTO users (
-		name,
-		password, 
-		email,
-		cpf
-	) VALUES ($1, $2)`
+	userRepository := &repository.NewUserRepository{DB: db}
 
-	result, err := db.Exec(
-		query,
-		user.Name,
-		user.Password,
-		user.Email,
-		user.Cpf,
-	)
-
+	err := userRepository.CreateTableUsersIfNotExist()
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error inserting user into database" + err.Error()})
+		c.JSON(500, gin.H{"error": "Error creating user table: " + err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusCreated, gin.H{
-		"message": "User has been created",
-		"user":    result,
-	})
+	userService := &services.NewUserService{Repo: userRepository}
+	userService.CreateUser(c, user)
 }

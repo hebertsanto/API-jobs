@@ -16,8 +16,8 @@ func GetCompany(c *gin.Context) {
 		return
 	}
 
-	if !utils.VerifyExistenceInDatabase(id, "profile") {
-		c.JSON(404, gin.H{"error": "Profile_id not found in database"})
+	if !utils.VerifyExistenceInDatabase(id, "company") {
+		c.JSON(404, gin.H{"error": "Company_id not found in database"})
 		return
 	}
 
@@ -26,7 +26,7 @@ func GetCompany(c *gin.Context) {
 	result, err := db.Exec(query, id)
 
 	if err != nil {
-		c.JSON(500, gin.H{"error": "Could not delete company" + err.Error()})
+		c.JSON(500, gin.H{"error": "Could not get company" + err.Error()})
 		return
 	}
 

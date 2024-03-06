@@ -12,10 +12,9 @@ import (
 
 func main() {
 	config.Load()
+
 	database.InitDb()
-
 	router := gin.Default()
-
 	routes.JobRoutes(router)
 	routes.UsersRoutes(router)
 	routes.CompanyRoutes(router)
