@@ -1,42 +1,39 @@
 package services
 
 import (
+	"vagas/infra/errors"
 	"vagas/infra/repository"
 	"vagas/models"
-
-	"github.com/gin-gonic/gin"
-	"github.com/go-playground/validator/v10"
+	"vagas/pkg/logger"
 )
 
 type NewUserService struct {
 	Repo *repository.UserRepository
 }
 
-func (u *NewUserService) CreateUser(c *gin.Context, user models.User) {
+func (u *NewUserService) CreateUser(user models.User) (models.User, error) {
 
 	err := u.Repo.CreateTableUsersIfNotExist()
 
 	if err != nil {
-		c.JSON(500, gin.H{"error": "Error creating user table: " + err.Error()})
-	}
-
-	validate := validator.New()
-	if err := validate.Struct(user); err != nil {
-		c.JSON(400, gin.H{"error": "some error ocurred validating data" + err.Error()})
-		return
+		logger.Log.Errorf("Error creating user table: %v", err)
+		return models.User{}, &errors.AppError{
+			Code:    500,
+			Message: "error creating user table" + err.Error(),
+		}
 	}
 
 	user, err = u.Repo.CreateUser(user)
 
 	if err != nil {
-		c.JSON(500, gin.H{"error": "Error creating user: " + err.Error()})
-		return
+		logger.Log.Errorf("Error creating user: %v", err)
+		return models.User{}, &errors.AppError{
+			Code:    500,
+			Message: "Error creating user: " + err.Error(),
+		}
 	}
 
-	c.JSON(201, gin.H{
-		"message": "User created successfully",
-		"user":    user,
-	})
+	return user, nil
 }
 
 func GetUsers(u *NewUserService) ([]models.User, error) {
