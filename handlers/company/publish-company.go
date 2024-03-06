@@ -6,6 +6,7 @@ import (
 	"vagas/models"
 
 	"github.com/gin-gonic/gin"
+	"github.com/go-playground/validator/v10"
 )
 
 func CreateTableCompanyQuerySQL(db *sql.DB) error {
@@ -51,9 +52,19 @@ func PulishCompany(c *gin.Context) {
 		return
 	}
 
+	validate := validator.New()
+	if err := validate.Struct(company); err != nil {
+		c.JSON(400, gin.H{"error": "some error ocurred validating data" + err.Error()})
+		return
+	}
+
 	query := "INSERT INTO company (name, owner, cnpj, total_employees, open_vacancies) VALUES ($1, $2, $3, $4, $5)"
 
 	result, err := db.Exec(query, company.Name, company.Owner, company.Cnpj, company.TotalEmployees, company.OpenVacancies)
+
+	if err != nil {
+		c.JSON(500, gin.H{"error": "Could not create company" + err.Error()})
+	}
 
 	c.JSON(200, gin.H{
 		"message": "company has been published in database",

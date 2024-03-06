@@ -7,6 +7,7 @@ import (
 	"vagas/models"
 
 	"github.com/gin-gonic/gin"
+	"github.com/go-playground/validator/v10"
 )
 
 func CreateTableUsersIfNotExist(db *sql.DB) error {
@@ -49,8 +50,9 @@ func CreateUser(c *gin.Context) {
 		return
 	}
 
-	if user.Name == "" || user.Email == "" {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Name and Email are required"})
+	validate := validator.New()
+	if err := validate.Struct(user); err != nil {
+		c.JSON(400, gin.H{"error": "some error ocurred validating data" + err.Error()})
 		return
 	}
 

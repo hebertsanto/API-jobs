@@ -7,6 +7,7 @@ import (
 	"vagas/models"
 
 	"github.com/gin-gonic/gin"
+	"github.com/go-playground/validator/v10"
 )
 
 func CreateTableQuerySql(db *sql.DB) error {
@@ -56,15 +57,37 @@ func PublishJob(c *gin.Context) {
 		return
 	}
 
-	query := "INSERT INTO jobs (name, description, company, location, salary, remote, company_id) VALUES ($1, $2, $3, $4, $5, $6, $7)"
+	validate := validator.New()
+	if err := validate.Struct(job); err != nil {
+		c.JSON(400, gin.H{"error": "error validatig data" + err.Error()})
+		return
+	}
 
-	result, err := db.Exec(query, job.Name, job.Description, job.Company, job.Location, job.Salary, job.Remote, job.CompanyId)
+	query := `
+	INSERT INTO jobs (
+	 name, 
+	 description, 
+	 company, 
+	 location, 
+	 salary, 
+	 remote, 
+	 company_id) VALUES ($1, $2, $3, $4, $5, $6, $7)`
+
+	result, err := db.Exec(
+		query,
+		job.Name,
+		job.Description,
+		job.Company,
+		job.Location,
+		job.Salary,
+		job.Remote,
+		job.CompanyId)
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error inserting job: " + err.Error()})
-
 		return
 	}
+
 	c.JSON(201, gin.H{
 		"message": "This route Public a job",
 		"result":  result,
