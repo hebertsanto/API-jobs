@@ -12,7 +12,16 @@ func UpdateJobById(c *gin.Context) {
 
 	var jobs models.Jobs
 
-	query := "UPDATE jobs SET name = ?, description = ?, company = ?, location = ?, salary = ?, remote = ?,  company_id = ? WHERE id = ?"
+	query := `
+	UPDATE jobs SET 
+	  name = ?, 
+	  description = ?, 
+	  company = ?, 
+	  location = ?, 
+	  salary = ?, 
+	  remote = ?,  
+	  company_id = ? 
+	  WHERE id = ?`
 
 	if db == nil {
 		c.JSON(500, gin.H{"error": "Database connection not set"})
@@ -23,7 +32,16 @@ func UpdateJobById(c *gin.Context) {
 		return
 	}
 
-	result, err := db.Exec(query, jobs.Name, jobs.Description, jobs.Company, jobs.Location, jobs.Salary, jobs.Remote, jobs.CompanyId)
+	result, err := db.Exec(
+		query,
+		jobs.Name,
+		jobs.Description,
+		jobs.Company,
+		jobs.Location,
+		jobs.Salary,
+		jobs.Remote,
+		jobs.CompanyId,
+	)
 
 	if err != nil {
 		c.JSON(500, gin.H{"error": "Could not update job" + err.Error()})

@@ -14,7 +14,7 @@ func CreateTableQuerySql(db *sql.DB) error {
 	createTableQuerySQL := `
 		CREATE TABLE IF NOT EXISTS jobs (
 			id SERIAL PRIMARY KEY,
-			title VARCHAR(255) NOT NULL,
+			name VARCHAR(255) NOT NULL,
 			description TEXT NOT NULL,
 			company VARCHAR(255) NOT NULL,
 			location VARCHAR(255) NOT NULL,
@@ -71,7 +71,8 @@ func PublishJob(c *gin.Context) {
 	 location, 
 	 salary, 
 	 remote, 
-	 company_id) VALUES ($1, $2, $3, $4, $5, $6, $7)`
+	 company_id
+	 ) VALUES ($1, $2, $3, $4, $5, $6, $7)`
 
 	result, err := db.Exec(
 		query,
@@ -81,7 +82,8 @@ func PublishJob(c *gin.Context) {
 		job.Location,
 		job.Salary,
 		job.Remote,
-		job.CompanyId)
+		job.CompanyId,
+	)
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error inserting job: " + err.Error()})

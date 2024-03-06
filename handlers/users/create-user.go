@@ -56,9 +56,21 @@ func CreateUser(c *gin.Context) {
 		return
 	}
 
-	query := "INSERT INTO users (name, email) VALUES ($1, $2)"
+	query := `
+	  INSERT INTO users (
+		name,
+		password, 
+		email,
+		cpf
+	) VALUES ($1, $2)`
 
-	result, err := db.Exec(query, user.Name, user.Email)
+	result, err := db.Exec(
+		query,
+		user.Name,
+		user.Password,
+		user.Email,
+		user.Cpf,
+	)
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error inserting user into database" + err.Error()})
@@ -66,7 +78,7 @@ func CreateUser(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusCreated, gin.H{
-		"message": "User created successfully in database",
+		"message": "User has been created",
 		"user":    result,
 	})
 }

@@ -30,7 +30,7 @@ func UpdateCompany(c *gin.Context) {
 	}
 
 	query := `
-	 UPDATE company SET 
+	  UPDATE company SET 
 	     name = ?,
 		 owner = ?, 
 		 cnpj = ?,
