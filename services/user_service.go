@@ -1,8 +1,8 @@
 package services
 
 import (
+	"vagas/infra/repository"
 	"vagas/models"
-	"vagas/repository"
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"

@@ -1,10 +1,10 @@
 package main
 
 import (
-	"log"
 	"strconv"
 	"vagas/config"
 	"vagas/database"
+	"vagas/pkg/logger"
 	"vagas/routes"
 
 	"github.com/gin-gonic/gin"
@@ -26,7 +26,7 @@ func main() {
 	portStr := strconv.Itoa(port)
 
 	if err := router.Run(":" + portStr); err != nil {
-		log.Fatal(err)
+		logger.Log.Fatal(err)
 	}
 
 }

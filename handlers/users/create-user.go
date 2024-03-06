@@ -2,8 +2,8 @@ package handlers
 
 import (
 	"vagas/database"
+	"vagas/infra/repository"
 	"vagas/models"
-	"vagas/repository"
 	"vagas/services"
 
 	"github.com/gin-gonic/gin"
