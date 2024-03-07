@@ -11,5 +11,6 @@ func UserProfileRoutes(router *gin.Engine) {
 	profile := router.Group("/profile")
 	{
 		profile.GET("/:id", controllers.GetProfile)
+		profile.GET("/:id", controllers.CreateProfile)
 	}
 }

@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"vagas/database"
 	"vagas/models"
+	"vagas/pkg/logger"
 )
 
 type UserRepository struct {
@@ -68,6 +69,7 @@ func (u *UserRepository) GetUsers() ([]models.User, error) {
 		users = append(users, user)
 	}
 	if err := rows.Err(); err != nil {
+		logger.Log.Error("Error on get users", err)
 		return nil, err
 	}
 

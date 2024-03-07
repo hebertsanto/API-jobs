@@ -1,33 +1,43 @@
 package controllers
 
 import (
-	"vagas/database"
-	"vagas/utils"
+	"vagas/infra/errors"
+	repository "vagas/infra/repository/profile"
+	"vagas/models"
+	"vagas/pkg/logger"
+	services "vagas/services/profile"
 
 	"github.com/gin-gonic/gin"
+	"github.com/go-playground/validator"
 )
 
 func GetProfile(c *gin.Context) {
-	db := database.GetDB()
 
 	id := c.Param("id")
+	profile := models.UserProfile{}
 
-	if !utils.VerifyExistenceInDatabase(id, "profile") {
-		c.JSON(404, gin.H{"error": "Profile_id not found in database"})
+	if err := c.ShouldBindJSON(&profile); err != nil {
+		errors.HandlerError(c, "BAD_REQUEST", err.Error(), 400)
 		return
 	}
 
-	if db == nil {
-		c.JSON(500, gin.H{"error": "Database connection not set"})
+	validate := validator.New()
+
+	if err := validate.Struct(profile); err != nil {
+		logger.Log.Infof("error validating user data: %+v\n", profile)
+		errors.HandlerError(c, "BAD_REQUEST", err.Error(), 400)
 		return
 	}
 
-	query := "SELECT * FROM profile WHERE id = ?"
+	profileRepo := repository.CreateProfileRepository()
 
-	result, err := db.Exec(query, id)
+	profileService := services.ProfileService{Repo: profileRepo}
+
+	result, err := profileService.GetProfile(profile, id)
 
 	if err != nil {
-		c.JSON(500, gin.H{"error": "Could not get profile" + err.Error()})
+		logger.Log.Error("Error getting profile...", err)
+		errors.HandlerError(c, "INTERNAL_SERVER_ERROR", err.Error(), 500)
 		return
 	}
 
