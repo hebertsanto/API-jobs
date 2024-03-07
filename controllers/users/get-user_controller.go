@@ -1,9 +1,12 @@
 package controllers
 
 import (
+	"net/http"
 	"vagas/database"
-	"vagas/infra/repository"
-	"vagas/services"
+	"vagas/infra/errors"
+	repository "vagas/infra/repository/users"
+	"vagas/pkg/logger"
+	services "vagas/services/users"
 
 	"github.com/gin-gonic/gin"
 )
@@ -21,12 +24,13 @@ func GetUsers(c *gin.Context) {
 	users, err := userService.Repo.GetUsers()
 
 	if err != nil {
-		c.JSON(500, gin.H{"error": "Error getting users: " + err.Error()})
+		logger.Log.Error("Error getting All users...", err)
+		errors.HandlerError(c, "INTERNAL_SERVER_ERROR", err.Error(), http.StatusInternalServerError)
 		return
 	}
 
 	c.JSON(200, gin.H{
-		"message": "User found successfully",
+		"message": "All users found successfully",
 		"users":   users,
 	})
 }

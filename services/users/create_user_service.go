@@ -2,7 +2,8 @@ package services
 
 import (
 	"vagas/infra/errors"
-	"vagas/infra/repository"
+	repository "vagas/infra/repository/users"
+
 	"vagas/models"
 	"vagas/pkg/logger"
 )
