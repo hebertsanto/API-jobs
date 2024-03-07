@@ -6,9 +6,10 @@ import (
 	repository "vagas/infra/repository/users"
 	"vagas/models"
 	"vagas/pkg/logger"
-	services "vagas/services/user"
+	services "vagas/services/users"
 
 	"github.com/gin-gonic/gin"
+	"github.com/go-playground/validator"
 )
 
 func CreateUser(c *gin.Context) {
@@ -18,6 +19,13 @@ func CreateUser(c *gin.Context) {
 	if err := c.ShouldBindJSON(&user); err != nil {
 		logger.Log.Infof("Payload received in invalid. Payload: %+v\n", user)
 		errors.HandlerError(c, "BAD_REQUEST", err.Error(), http.StatusBadRequest)
+	}
+
+	validate := validator.New()
+	if err := validate.Struct(user); err != nil {
+		logger.Log.Infof("error validating user data: %+v\n", user)
+		errors.HandlerError(c, "BAD_REQUEST", err.Error(), http.StatusBadRequest)
+		return
 	}
 
 	userRepository := repository.NewUserRepository()
