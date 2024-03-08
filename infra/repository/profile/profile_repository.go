@@ -18,7 +18,6 @@ func CreateProfileRepository() *ProfileRepository {
 }
 
 func (p *ProfileRepository) CreateTableProfileIfNotExist() error {
-
 	createTableQuerySQL := `
 	CREATE TABLE IF NOT EXISTS profiles (
 		id SERIAL PRIMARY KEY,
@@ -29,6 +28,7 @@ func (p *ProfileRepository) CreateTableProfileIfNotExist() error {
 		linkedin VARCHAR(255) NOT NULL,
 		website VARCHAR(255) NOT NULL,
 		user_id VARCHAR(255) NOT NULL
+		FOREING KEY (user_id) REFERENCES users(id)
 	)
 	`
 	_, err := p.db.Exec(createTableQuerySQL)
@@ -40,7 +40,6 @@ func (p *ProfileRepository) CreateTableProfileIfNotExist() error {
 }
 
 func (p *ProfileRepository) CreateProfile(profile models.UserProfile) (models.UserProfile, error) {
-
 	query := `INSERT INTO profiles (name, email, position, github_url, linkedin, website, user_id) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING name`
 	var name string
 	err := p.db.QueryRow(query, profile.UserName, profile.Email, profile.Position, profile.GithubUrl, profile.Linkedin, profile.Website, profile.UserId).Scan(&name)

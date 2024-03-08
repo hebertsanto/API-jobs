@@ -1,6 +1,10 @@
 package routes
 
-import "github.com/gin-gonic/gin"
+import (
+	controller "vagas/controllers/aply_job"
+
+	"github.com/gin-gonic/gin"
+)
 
 func AplyJobRoutes(router *gin.Engine) {
 
@@ -8,7 +12,7 @@ func AplyJobRoutes(router *gin.Engine) {
 	{
 		company.GET("/")
 		company.GET("/:id")
-		company.POST("/")
+		company.POST("/", controller.CreateAplyJob)
 		company.DELETE("/:id")
 	}
 }

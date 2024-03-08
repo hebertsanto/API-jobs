@@ -20,7 +20,7 @@ func NewUserRepository() *UserRepository {
 func (u *UserRepository) CreateTableUsersIfNotExist() error {
 
 	createTableQuerySQL := `
-	CREATE TABLE IF NOT EXISTS usuarios (
+	CREATE TABLE IF NOT EXISTS users (
 		id SERIAL PRIMARY KEY,
 		name VARCHAR(255) NOT NULL,
 		password VARCHAR(255) NOT NULL,

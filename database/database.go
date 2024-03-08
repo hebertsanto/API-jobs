@@ -17,7 +17,7 @@ func InitDb() {
 
 	db, err = sql.Open("postgres", config.Sc)
 
-	if err != nil {
+	if err == nil {
 		log.Fatal("some error ocurred trying to connect to database" + err.Error())
 		return
 	}
