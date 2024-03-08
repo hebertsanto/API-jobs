@@ -1,37 +1,45 @@
 package controllers
 
 import (
-	"vagas/database"
-	"vagas/utils"
+	"net/http"
+	"vagas/infra/errors"
+	repository "vagas/infra/repository/company"
+	"vagas/models"
+	"vagas/pkg/logger"
+	services "vagas/services/company"
 
 	"github.com/gin-gonic/gin"
+	"github.com/go-playground/validator"
 )
 
-func GetCompany(c *gin.Context) {
-	db := database.GetDB()
+func GetCompanyById(c *gin.Context) {
 
-	id := c.Param("id")
-	if db == nil {
-		c.JSON(500, gin.H{"error": "Database connection not set"})
+	company := models.Company{}
+	if err := c.ShouldBindJSON(&company); err != nil {
+		logger.Log.Errorf("Payload received in invalid. Payload: %+v\n", company)
+		errors.HandlerError(c, "BAD_REQUEST", err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	if !utils.VerifyExistenceInDatabase(id, "company") {
-		c.JSON(404, gin.H{"error": "Company_id not found in database"})
-		return
+	validate := validator.New()
+	if err := validate.Struct(company); err != nil {
+		logger.Log.Errorf("error validating company data: %+v\n", company)
+		errors.HandlerError(c, "BAD_REQUEST", err.Error(), http.StatusBadRequest)
 	}
 
-	query := "SELECT * FROM company WHERE id = ?"
+	companyRepo := repository.NewCompanyRepository()
+	userService := services.CompanyService{Repo: companyRepo}
 
-	result, err := db.Exec(query, id)
-
+	result, err := userService.GetCompanyService(company.ID)
 	if err != nil {
-		c.JSON(500, gin.H{"error": "Could not get company" + err.Error()})
+		logger.Log.Errorf("Error getting company: %v", err)
+		errors.HandlerError(c, "INTERNAL_SERVER_ERROR", err.Error(), http.StatusInternalServerError)
 		return
 	}
 
 	c.JSON(200, gin.H{
 		"message": "company found",
-		"result":  result,
+		"company": result,
 	})
+
 }

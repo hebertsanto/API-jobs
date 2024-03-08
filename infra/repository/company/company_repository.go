@@ -67,7 +67,7 @@ func (u *CompanyRepostitory) CreateCompany(company models.Company) (models.Compa
 	return company, nil
 }
 
-func (u *CompanyRepostitory) GetCompanyById(id int) models.Company {
+func (u *CompanyRepostitory) GetCompanyById(id string) (models.Company, error) {
 	var company models.Company
 	query := `
 	SELECT * FROM company WHERE id = ?
@@ -75,10 +75,10 @@ func (u *CompanyRepostitory) GetCompanyById(id int) models.Company {
 	err := u.DB.QueryRow(query, id)
 
 	if err != nil {
-		return company
+		return company, nil
 	}
 
-	return company
+	return company, nil
 }
 
 func (u *CompanyRepostitory) DeleteCompany(id int) error {
