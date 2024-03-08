@@ -13,6 +13,6 @@ func AplyJobRoutes(router *gin.Engine) {
 		company.GET("/")
 		company.GET("/:id")
 		company.POST("/", controller.CreateAplyJob)
-		company.DELETE("/:id")
+		company.DELETE("/:id", controller.DeleteAplyJob)
 	}
 }

@@ -30,7 +30,7 @@ func CreateAplyJob(c *gin.Context) {
 
 	aplyRepo := repository.NewAplyJobRepository()
 
-	aplyService := services.CreateAplyJobService{Repo: aplyRepo}
+	aplyService := services.AplyJobService{Repo: aplyRepo}
 
 	aply, err := aplyService.CreateAplyJobService(aply)
 

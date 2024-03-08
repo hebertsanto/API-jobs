@@ -7,11 +7,11 @@ import (
 	"vagas/pkg/logger"
 )
 
-type CreateAplyJobService struct {
+type AplyJobService struct {
 	Repo *repository.AplyJobRepository
 }
 
-func (j *CreateAplyJobService) CreateAplyJobService(aply models.ApplyJob) (models.ApplyJob, error) {
+func (j *AplyJobService) CreateAplyJobService(aply models.ApplyJob) (models.ApplyJob, error) {
 	err := j.Repo.CreateTableAplyIfNotExist()
 	if err != nil {
 		logger.Log.Error("Error creating aply job table...", err)
@@ -31,4 +31,17 @@ func (j *CreateAplyJobService) CreateAplyJobService(aply models.ApplyJob) (model
 	}
 
 	return result, nil
+}
+
+func (j *AplyJobService) DeleteAply(id string) error {
+	err := j.Repo.UserDeleteAply(id)
+	if err != nil {
+		logger.Log.Error("Error deleting aply job...", err)
+		return &errors.AppError{
+			Code:    500,
+			Message: "error deleting aply job table: " + err.Error(),
+		}
+	}
+
+	return err
 }

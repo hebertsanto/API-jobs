@@ -45,7 +45,7 @@ func (a *AplyJobRepository) UserAplyJob(aply models.ApplyJob) (models.ApplyJob, 
 	return aply, nil
 }
 
-func (a *AplyJobRepository) UserDeleteAply(aply *models.ApplyJob, id string) error {
+func (a *AplyJobRepository) UserDeleteAply(id string) error {
 
 	query := `
 	DELETE FROM aply_job WHERE id = ?
