@@ -10,8 +10,7 @@ func AplyJobRoutes(router *gin.Engine) {
 
 	company := router.Group("/aply-job")
 	{
-		company.GET("/")
-		company.GET("/:id")
+		company.GET("/:id", controller.GetAplyJob)
 		company.POST("/", controller.CreateAplyJob)
 		company.DELETE("/:id", controller.DeleteAplyJob)
 	}

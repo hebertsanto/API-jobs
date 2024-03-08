@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"vagas/database"
 	"vagas/models"
+	"vagas/pkg/logger"
 )
 
 type AplyJobRepository struct {
@@ -53,4 +54,17 @@ func (a *AplyJobRepository) UserDeleteAply(id string) error {
 	_, err := a.DB.Exec(query, id)
 
 	return err
+}
+
+func (a *AplyJobRepository) GetAplyJob(id string) (sql.Result, error) {
+
+	query := `
+	SELECT FROM aply_job WHERE id = ?
+	`
+	result, err := a.DB.Exec(query, id)
+	if err != nil {
+		logger.Log.Error("Error getting aply job...", err)
+		return nil, err
+	}
+	return result, err
 }

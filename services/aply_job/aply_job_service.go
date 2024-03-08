@@ -1,6 +1,7 @@
 package services
 
 import (
+	"database/sql"
 	"vagas/infra/errors"
 	repository "vagas/infra/repository/aply_job"
 	"vagas/models"
@@ -44,4 +45,17 @@ func (j *AplyJobService) DeleteAply(id string) error {
 	}
 
 	return err
+}
+
+func (j *AplyJobService) GetAplyJob(id string) (sql.Result, error) {
+	result, err := j.Repo.GetAplyJob(id)
+	if err != nil {
+		logger.Log.Error("Error deleting aply job...", err)
+		return result, &errors.AppError{
+			Code:    500,
+			Message: "error deleting aply job table: " + err.Error(),
+		}
+	}
+
+	return result, err
 }
