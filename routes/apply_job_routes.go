@@ -1,7 +1,7 @@
 package routes
 
 import (
-	controller "vagas/controllers/aply_job"
+	controller "vagas/controllers/apply_job"
 
 	"github.com/gin-gonic/gin"
 )
