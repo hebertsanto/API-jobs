@@ -35,3 +35,15 @@ func (c *CompanyService) CreateCompany(company models.Company) (models.Company, 
 	logger.Log.Infof("Company created: %v", result)
 	return result, nil
 }
+
+func (c *CompanyService) DeleteCompany(id int) error {
+	err := c.Repo.DeleteCompany(id)
+	if err != nil {
+		logger.Log.Errorf("Error deleting company: %v", err)
+		return &errors.AppError{
+			Code:    500,
+			Message: "Error deleting company: " + err.Error(),
+		}
+	}
+	return nil
+}

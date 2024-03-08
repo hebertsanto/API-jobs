@@ -80,3 +80,16 @@ func (u *CompanyRepostitory) GetCompanyById(id int) models.Company {
 
 	return company
 }
+
+func (u *CompanyRepostitory) DeleteCompany(id int) error {
+	query := `
+	DELETE FROM company WHERE id = ?
+	`
+	_, err := u.DB.Exec(query, id)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
