@@ -2,21 +2,21 @@ package repository
 
 import (
 	"database/sql"
-	"log"
 	"vagas/database"
 	"vagas/models"
 )
 
-type NewCompanyRepository struct {
+type CompanyRepostitory struct {
 	DB *sql.DB
 }
 
-func (c *NewCompanyRepository) CreateTableCompaniesIfNotExist() error {
-	db := database.GetDB()
-
-	if db == nil {
-		log.Fatal("Database not found")
+func NewCompanyRepository() *CompanyRepostitory {
+	return &CompanyRepostitory{
+		DB: database.GetDB(),
 	}
+}
+
+func (c *CompanyRepostitory) CreateTableCompaniesIfNotExist() error {
 
 	query := `
 	CREATE TABLE IF NOT EXISTS company (
@@ -37,14 +37,7 @@ func (c *NewCompanyRepository) CreateTableCompaniesIfNotExist() error {
 	return nil
 }
 
-func (u *NewCompanyRepository) CreateUser(company models.Company) error {
-
-	db := database.GetDB()
-
-	if db == nil {
-		log.Fatal("Database not found")
-	}
-
+func (u *CompanyRepostitory) CreateCompany(company models.Company) (models.Company, error) {
 	query := `
 	INSERT INTO company (
 		name, 
@@ -58,23 +51,23 @@ func (u *NewCompanyRepository) CreateUser(company models.Company) error {
 
 	var err error
 
-	_, err = u.DB.Exec(
+	err = u.DB.QueryRow(
 		query,
 		company.Name,
 		company.Owner,
 		company.Cnpj,
 		company.TotalEmployees,
 		company.OpenVacancies,
-	)
+	).Scan(company.ID)
 
 	if err != nil {
-		return err
+		return models.Company{}, err
 	}
 
-	return nil
+	return company, nil
 }
 
-func (u *NewCompanyRepository) GetCompanyById(id int) models.Company {
+func (u *CompanyRepostitory) GetCompanyById(id int) models.Company {
 	var company models.Company
 	query := `
 	SELECT * FROM company WHERE id = ?

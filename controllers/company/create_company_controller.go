@@ -1,90 +1,47 @@
 package controllers
 
 import (
-	"database/sql"
-	"vagas/database"
+	"net/http"
+	"vagas/infra/errors"
+	repository "vagas/infra/repository/company"
 	"vagas/models"
+	"vagas/pkg/logger"
+	services "vagas/services/company"
 
 	"github.com/gin-gonic/gin"
-	"github.com/go-playground/validator/v10"
+	"github.com/go-playground/validator"
 )
 
-func CreateTableCompanyQuerySQL(db *sql.DB) error {
-	query := `
-	CREATE TABLE IF NOT EXISTS company (
-		id SERIAL PRIMARY KEY,
-		name VARCHAR(100) NOT NULL,
-		owner VARCHAR(100) NOT NULL,
-		cnpj VARCHAR(14) NOT NULL,
-		total_employees INT NOT NULL,
-		open_vacancies INT NOT NULL,
-		create_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
-	);
-	`
-	_, err := db.Exec(query)
-
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
-
 func PulishCompany(c *gin.Context) {
-
-	db := database.GetDB()
-
-	if db == nil {
-		c.JSON(500, gin.H{"error": "Database connection not set"})
-		return
-	}
-
-	err := CreateTableCompanyQuerySQL(db)
-
-	if err != nil {
-		c.JSON(500, gin.H{"error": "Error creating company table: " + err.Error()})
-		return
-	}
-
-	var company models.Company
+	company := models.Company{}
 
 	if err := c.ShouldBindJSON(&company); err != nil {
-		c.JSON(400, gin.H{"error": err.Error()})
+		logger.Log.Infof("Payload received in invalid. Payload: %+v\n", company)
+		errors.HandlerError(c, "BAD_REQUEST", err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	validate := validator.New()
-	if err := validate.Struct(company); err != nil {
-		c.JSON(400, gin.H{"error": "some error ocurred validating data" + err.Error()})
+	validator := validator.New()
+	if err := validator.Struct(company); err != nil {
+		logger.Log.Infof("error validating company data: %+v\n", company)
+		errors.HandlerError(c, "BAD_REQUEST", err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	query := `
-	INSERT INTO company (
-		name, 
-		owner, 
-		cnpj, 
-		total_employees, 
-		open_vacancies
-	  ) 
-		VALUES ($1, $2, $3, $4, $5)`
+	userRepository := repository.NewCompanyRepository()
 
-	result, err := db.Exec(
-		query,
-		company.Name,
-		company.Owner,
-		company.Cnpj,
-		company.TotalEmployees,
-		company.OpenVacancies,
-	)
+	userService := services.CompanyService{Repo: userRepository}
+
+	company, err := userService.CreateCompany(company)
 
 	if err != nil {
-		c.JSON(500, gin.H{"error": "Could not create company" + err.Error()})
+		logger.Log.Error("Error creating company...", err)
+		errors.HandlerError(c, "INTERNAL_SERVER_ERROR", err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	c.JSON(200, gin.H{
-		"message": "company has been published in database",
-		"result":  result,
+	c.JSON(http.StatusCreated, gin.H{
+		"message": "company created sucessfully",
+		"company": company,
 	})
 }
