@@ -48,10 +48,7 @@ func (u *CompanyRepostitory) CreateCompany(company models.Company) (models.Compa
 	  ) 
 	  VALUES ($1, $2, $3, $4, $5)
 	`
-
-	var err error
-
-	err = u.DB.QueryRow(
+	err := u.DB.QueryRow(
 		query,
 		company.Name,
 		company.Owner,

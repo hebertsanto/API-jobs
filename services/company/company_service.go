@@ -56,7 +56,7 @@ func (c *CompanyService) GetCompanyService(id string) (models.Company, error) {
 		logger.Log.Errorf("Error deleting company: %v", err)
 		return models.Company{}, &errors.AppError{
 			Code:    500,
-			Message: "Error geting company by id: " + err.Error(),
+			Message: "Error geting company: " + err.Error(),
 		}
 	}
 	return company, nil
