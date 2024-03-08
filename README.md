@@ -31,4 +31,9 @@
 - [x] a user can apply for a job vacancy
 - [x] a user gives up on a job vacancy
 
+### data modeling
+
+![jobs (2)](https://github.com/hebertsanto/API-jobs/assets/108555424/2ea41343-de17-483d-8334-216fcdd71695)
+
+
 
