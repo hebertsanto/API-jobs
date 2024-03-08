@@ -26,6 +26,8 @@ func (u *UserRepository) CreateTableUsersIfNotExist() error {
 		password VARCHAR(255) NOT NULL,
 		email VARCHAR(255) NOT NULL,
 		cpf VARCHAR(255) NOT NULL
+		user_profile_id INT UNIQUE NOT NULL,
+		FOREIGN KEY (user_profile_id) REFERENCES profiles(id)
 	)
 	`
 	_, err := u.db.Exec(createTableQuerySQL)
@@ -37,7 +39,7 @@ func (u *UserRepository) CreateTableUsersIfNotExist() error {
 
 func (u *UserRepository) CreateUser(user models.User) (models.User, error) {
 
-	query := `INSERT INTO usuarios (name, password, email, cpf ) VALUES ($1, $2, $3, $4) RETURNING name`
+	query := `INSERT INTO usuarios (name, password, email, cpf, user_profile_id) VALUES ($1, $2, $3, $4, $5) RETURNING name`
 	var name string
 	err := u.db.QueryRow(query, user.Name, user.Password, user.Email, user.Cpf).Scan(&name)
 	if err != nil {

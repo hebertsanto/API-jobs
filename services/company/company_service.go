@@ -61,3 +61,18 @@ func (c *CompanyService) GetCompanyService(id string) (models.Company, error) {
 	}
 	return company, nil
 }
+
+func (c *CompanyService) UpdateCompany(company models.Company, id string) (models.Company, error) {
+
+	result, err := c.Repo.UpdateCompany(company, id)
+	if err != nil {
+		logger.Log.Errorf("Error updating company: %v", err)
+		return models.Company{}, &errors.AppError{
+			Code:    500,
+			Message: "Error updating company: " + err.Error(),
+		}
+	}
+
+	logger.Log.Infof("Company was updated: %v", result)
+	return result, nil
+}

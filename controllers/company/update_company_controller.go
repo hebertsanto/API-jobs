@@ -1,60 +1,47 @@
 package controllers
 
 import (
-	"vagas/database"
+	"net/http"
+	"vagas/infra/errors"
+	repository "vagas/infra/repository/company"
 	"vagas/models"
+	"vagas/pkg/logger"
+	services "vagas/services/company"
 
 	"github.com/gin-gonic/gin"
-	"github.com/go-playground/validator/v10"
+	"github.com/go-playground/validator"
 )
 
 func UpdateCompany(c *gin.Context) {
+	company := models.Company{}
 
-	db := database.GetDB()
-
-	if db == nil {
-		c.JSON(500, gin.H{"error": "Database connection not set"})
-		return
-	}
-
-	var company models.Company
-
+	id := c.Param("id")
 	if err := c.ShouldBindJSON(&company); err != nil {
-		c.JSON(400, gin.H{"error": err.Error()})
+		logger.Log.Errorf("Error binding company: %v", err)
+		errors.HandlerError(c, "BAD_REQUEST", err.Error(), http.StatusBadRequest)
 		return
 	}
 
 	validate := validator.New()
+
 	if err := validate.Struct(company); err != nil {
-		c.JSON(400, gin.H{"error": "some error ocurred validating company data" + err.Error()})
+		logger.Log.Errorf("Error validating company: %v", err)
+		errors.HandlerError(c, "BAD_REQUEST", err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	query := `
-	  UPDATE company SET 
-	     name = ?,
-		 owner = ?, 
-		 cnpj = ?,
-		 total_employees = ?,
-		 open_vacancies = ?
-		 ) VALUES ($1, $2, $3, $4, $5)`
+	companyRepo := repository.NewCompanyRepository()
+	companyService := services.CompanyService{Repo: companyRepo}
 
-	result, err := db.Exec(
-		query,
-		company.Name,
-		company.Owner,
-		company.Cnpj,
-		company.TotalEmployees,
-		company.OpenVacancies,
-	)
-
+	result, err := companyService.UpdateCompany(company, id)
 	if err != nil {
-		c.JSON(500, gin.H{"error": "Could not update company" + err.Error()})
-		return
+		logger.Log.Errorf("Error updating company: %v", err)
+		errors.HandlerError(c, "INTERNAL_SERVER_ERROR", err.Error(), http.StatusInternalServerError)
 	}
 
-	c.JSON(200, gin.H{
-		"message": "company has been updated in database",
-		"result":  result,
+	c.JSON(http.StatusOK, gin.H{
+		"message": "Company updated successfully",
+		"company": result,
 	})
+
 }

@@ -90,3 +90,27 @@ func (u *CompanyRepostitory) DeleteCompany(id int) error {
 
 	return nil
 }
+
+func (u *CompanyRepostitory) UpdateCompany(company models.Company, id string) (models.Company, error) {
+	query := `
+	  UPDATE company SET 
+	     name = ?,
+		 owner = ?, 
+		 cnpj = ?,
+		 total_employees = ?,
+		 open_vacancies = ?
+		 ) VALUES ($1, $2, $3, $4, $5)`
+
+	err := u.DB.QueryRow(
+		query,
+		company.Name,
+		company.Owner,
+		company.Cnpj,
+		company.TotalEmployees,
+		company.OpenVacancies,
+	).Scan(company.ID)
+	if err != nil {
+		return company, nil
+	}
+	return company, nil
+}

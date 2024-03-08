@@ -45,7 +45,7 @@ func (j *JobRepository) CreateJob(job models.Jobs) (models.Jobs, error) {
 	query := `
 	INSERT INTO jobs (name, description, company, location, salary, remote, company_id) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id
 	`
-	err := j.DB.QueryRow(query, job.Name, job.Description, job.Company, job.Location, job.Salary, job.Remote, job.ID).Scan(&job.ID)
+	err := j.DB.QueryRow(query, job.Name, job.Description, job.Company, job.Location, job.Salary, job.Remote, job.CompanyId).Scan(&job.ID)
 	if err != nil {
 		logger.Log.Error("Error creating job...", err)
 		return models.Jobs{}, nil

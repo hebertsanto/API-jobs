@@ -22,6 +22,7 @@ func (a *AplyJobRepository) CreateTableAplyIfNotExist() error {
 	CREATE TABLE IF NOT EXISTS aply_job (
 		id SERIAL PRIMARY KEY,
 		userName VARCHAR(255) NOT NULL,
+		email VARCHAR(255) NOT NULL,
 		job_id INTEGER NOT NULL,
 		user_id INTEGER NOT NULL,
 		FOREIGN KEY (job_id) REFERENCES jobs(id),
@@ -37,9 +38,9 @@ func (a *AplyJobRepository) CreateTableAplyIfNotExist() error {
 
 func (a *AplyJobRepository) UserAplyJob(aply models.ApplyJob) (models.ApplyJob, error) {
 	query := `
-	INSERT INTO aply_job (userName, job_id, user_id) VALUES ($1, $2, $3) RETURNING id
+	INSERT INTO aply_job (userName, email, job_id, user_id) VALUES ($1, $2, $3) RETURNING id
 	`
-	err := a.DB.QueryRow(query, aply.UserName, aply.JobID, aply.UserID)
+	err := a.DB.QueryRow(query, aply.UserName, aply.Email, aply.JobID, aply.UserID)
 	if err != nil {
 		return models.ApplyJob{}, nil
 	}
