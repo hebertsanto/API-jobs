@@ -3,7 +3,7 @@ package controller
 import (
 	"net/http"
 	"vagas/infra/errors"
-	repository "vagas/infra/repository/aply_job"
+	repository "vagas/infra/repository/apply_job"
 	"vagas/pkg/logger"
 
 	"github.com/gin-gonic/gin"

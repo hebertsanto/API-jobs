@@ -3,16 +3,16 @@ package services
 import (
 	"database/sql"
 	"vagas/infra/errors"
-	repository "vagas/infra/repository/aply_job"
+	repository "vagas/infra/repository/apply_job"
 	"vagas/models"
 	"vagas/pkg/logger"
 )
 
-type AplyJobService struct {
+type ApplyJob struct {
 	Repo *repository.AplyJobRepository
 }
 
-func (j *AplyJobService) CreateAplyJobService(aply models.ApplyJob) (models.ApplyJob, error) {
+func (j *ApplyJob) CreateAplyJobService(aply models.ApplyJob) (models.ApplyJob, error) {
 	err := j.Repo.CreateTableAplyIfNotExist()
 	if err != nil {
 		logger.Log.Error("Error creating aply job table...", err)
@@ -34,7 +34,7 @@ func (j *AplyJobService) CreateAplyJobService(aply models.ApplyJob) (models.Appl
 	return result, nil
 }
 
-func (j *AplyJobService) DeleteAply(id string) error {
+func (j *ApplyJob) DeleteAply(id string) error {
 	err := j.Repo.UserDeleteAply(id)
 	if err != nil {
 		logger.Log.Error("Error deleting aply job...", err)
@@ -47,7 +47,7 @@ func (j *AplyJobService) DeleteAply(id string) error {
 	return err
 }
 
-func (j *AplyJobService) GetAplyJob(id string) (sql.Result, error) {
+func (j *ApplyJob) GetAplyJob(id string) (sql.Result, error) {
 	result, err := j.Repo.GetAplyJob(id)
 	if err != nil {
 		logger.Log.Error("Error deleting aply job...", err)

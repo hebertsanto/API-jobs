@@ -3,10 +3,10 @@ package controller
 import (
 	"net/http"
 	"vagas/infra/errors"
-	repository "vagas/infra/repository/aply_job"
+	repository "vagas/infra/repository/apply_job"
 	"vagas/models"
 	"vagas/pkg/logger"
-	services "vagas/services/aply_job"
+	services "vagas/services/apply_job"
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator"
@@ -30,7 +30,7 @@ func CreateAplyJob(c *gin.Context) {
 
 	aplyRepo := repository.NewAplyJobRepository()
 
-	aplyService := services.AplyJobService{Repo: aplyRepo}
+	aplyService := services.ApplyJob{Repo: aplyRepo}
 
 	aply, err := aplyService.CreateAplyJobService(aply)
 

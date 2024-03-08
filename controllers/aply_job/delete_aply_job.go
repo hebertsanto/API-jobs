@@ -3,9 +3,9 @@ package controller
 import (
 	"net/http"
 	"vagas/infra/errors"
-	repository "vagas/infra/repository/aply_job"
+	repository "vagas/infra/repository/apply_job"
 	"vagas/pkg/logger"
-	services "vagas/services/aply_job"
+	services "vagas/services/apply_job"
 
 	"github.com/gin-gonic/gin"
 )
@@ -15,7 +15,7 @@ func DeleteAplyJob(c *gin.Context) {
 
 	aplyRepo := repository.NewAplyJobRepository()
 
-	deleteAplyService := services.AplyJobService{Repo: aplyRepo}
+	deleteAplyService := services.ApplyJob{Repo: aplyRepo}
 
 	if err := deleteAplyService.DeleteAply(id); err != nil {
 		logger.Log.Error("Error deleting aply job...", err)
