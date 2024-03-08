@@ -1,97 +1,48 @@
 package controllers
 
 import (
-	"database/sql"
 	"net/http"
-	"vagas/database"
+	"vagas/infra/errors"
+	repository "vagas/infra/repository/jobs"
 	"vagas/models"
+	"vagas/pkg/logger"
+	services "vagas/services/jobs"
 
 	"github.com/gin-gonic/gin"
-	"github.com/go-playground/validator/v10"
+	"github.com/go-playground/validator"
 )
 
-func CreateTableQuerySql(db *sql.DB) error {
-	createTableQuerySQL := `
-		CREATE TABLE IF NOT EXISTS jobs (
-			id SERIAL PRIMARY KEY,
-			name VARCHAR(255) NOT NULL,
-			description TEXT NOT NULL,
-			company VARCHAR(255) NOT NULL,
-			location VARCHAR(255) NOT NULL,
-			salary REAL NOT NULL,
-			remote BOOLEAN NOT NULL
-			comapany_id VARCHAR(255) NOT NULL,
-			published_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-			updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
-			FOREIGN KEY (company_id) REFERENCES company (id)
-		)
-	`
-	_, err := db.Exec(createTableQuerySQL)
-	if err != nil {
-		return err
-	}
-
-	return nil
-
-}
-
-func PublishJob(c *gin.Context) {
-	db := database.GetDB()
-
-	if db == nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Database connection not set"})
-		return
-	}
-
-	err := CreateTableQuerySql(db)
-
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error creating jobs table: " + err.Error()})
-		return
-	}
-
-	var job models.Jobs
+func CreateJob(c *gin.Context) {
+	job := models.Jobs{}
 
 	if err := c.ShouldBindJSON(&job); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		logger.Log.Error("Error binding job...", err)
+		errors.HandlerError(c, "BAD_REQUEST", err.Error(), http.StatusBadRequest)
 		return
 	}
 
 	validate := validator.New()
+
 	if err := validate.Struct(job); err != nil {
-		c.JSON(400, gin.H{"error": "error validatig data" + err.Error()})
+		logger.Log.Error("Error validating job...", err)
+		errors.HandlerError(c, "BAD_REQUEST", err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	query := `
-	INSERT INTO jobs (
-	 name, 
-	 description, 
-	 company, 
-	 location, 
-	 salary, 
-	 remote, 
-	 company_id
-	 ) VALUES ($1, $2, $3, $4, $5, $6, $7)`
+	jobRepo := repository.NewJobRepository()
+	jobService := services.JobService{Repo: jobRepo}
 
-	result, err := db.Exec(
-		query,
-		job.Name,
-		job.Description,
-		job.Company,
-		job.Location,
-		job.Salary,
-		job.Remote,
-		job.CompanyId,
-	)
+	result, err := jobService.CreateJobService(job)
 
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error inserting job: " + err.Error()})
+		logger.Log.Error("Error creating job...", err)
+		errors.HandlerError(c, "INTERNAL_SERVER_ERROR", err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	c.JSON(201, gin.H{
-		"message": "This route Public a job",
+	c.JSON(http.StatusCreated, gin.H{
+		"message": "job has been created",
 		"result":  result,
 	})
+
 }

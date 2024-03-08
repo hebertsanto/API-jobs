@@ -1,6 +1,7 @@
 package services
 
 import (
+	"database/sql"
 	"vagas/infra/errors"
 	repository "vagas/infra/repository/profile"
 	"vagas/models"
@@ -36,17 +37,17 @@ func (p *ProfileService) CreateProfile(profile models.UserProfile) (models.UserP
 	return profile, nil
 }
 
-func (p *ProfileService) GetProfile(profile models.UserProfile, id string) (models.UserProfile, error) {
+func (p *ProfileService) GetProfile(id string) (sql.Result, error) {
 
-	profile, err := p.GetProfile(profile, id)
+	result, err := p.Repo.GetProfile(id)
 
 	if err != nil {
 		logger.Log.Errorf("Error getting user: %v", err)
-		return models.UserProfile{}, &errors.AppError{
+		return result, &errors.AppError{
 			Code:    500,
 			Message: "Error getting user: " + err.Error(),
 		}
 	}
 
-	return profile, nil
+	return result, nil
 }

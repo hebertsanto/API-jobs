@@ -33,7 +33,7 @@ func GetProfile(c *gin.Context) {
 
 	profileService := services.ProfileService{Repo: profileRepo}
 
-	result, err := profileService.GetProfile(profile, id)
+	result, err := profileService.GetProfile(id)
 
 	if err != nil {
 		logger.Log.Error("Error getting profile...", err)

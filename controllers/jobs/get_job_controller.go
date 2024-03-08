@@ -1,37 +1,28 @@
 package controllers
 
 import (
-	"vagas/database"
+	"net/http"
+	"vagas/infra/errors"
+	repository "vagas/infra/repository/jobs"
+	"vagas/pkg/logger"
 
 	"github.com/gin-gonic/gin"
 )
 
 func GetJobById(c *gin.Context) {
+	id := c.Param("id")
 
-	db := database.GetDB()
+	jobRepo := repository.NewJobRepository()
 
-	params := c.Param("id")
-
-	query := "SELECT * FROM jobs WHERE id = ? "
-
-	if db == nil {
-		c.JSON(500, gin.H{"error": "Database connection not set"})
-		return
-
-	}
-
-	job, err := db.Exec(query, params)
-
+	result, err := jobRepo.GetJob(id)
 	if err != nil {
-		c.JSON(500, gin.H{"error": "Error getting job table: " + err.Error()})
+		logger.Log.Error("Error getting job...", err)
+		errors.HandlerError(c, "BAD_REQUEST", err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	if err != nil {
-		c.JSON(500, gin.H{"error": "Error getting job: " + err.Error()})
-	}
-	c.JSON(200, gin.H{
-		"message": "this fun get job in database",
-		"job":     job,
+	c.JSON(http.StatusOK, gin.H{
+		"message": "job found",
+		"result":  result,
 	})
 }

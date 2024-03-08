@@ -54,7 +54,7 @@ func (p *ProfileRepository) CreateProfile(profile models.UserProfile) (models.Us
 
 }
 
-func (p *ProfileRepository) GetProfile(profile models.UserProfile, id string) (sql.Result, error) {
+func (p *ProfileRepository) GetProfile(id string) (sql.Result, error) {
 
 	query := `SELECT * FROM profiles WHERE id = ?`
 
