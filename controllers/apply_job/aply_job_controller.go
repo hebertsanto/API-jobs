@@ -9,7 +9,6 @@ import (
 	services "vagas/services/apply_job"
 
 	"github.com/gin-gonic/gin"
-	"github.com/go-playground/validator"
 )
 
 func CreateAplyJob(c *gin.Context) {
@@ -19,13 +18,6 @@ func CreateAplyJob(c *gin.Context) {
 		logger.Log.Error("Error binding json...", err)
 		errors.HandlerError(c, "BAD_REQUEST", err.Error(), http.StatusBadRequest)
 		return
-	}
-
-	validate := validator.New()
-
-	if err := validate.Struct(aply); err != nil {
-		logger.Log.Error("Error validating aply job...", err)
-		errors.HandlerError(c, "BAD_REQUEST", err.Error(), http.StatusBadRequest)
 	}
 
 	aplyRepo := repository.NewAplyJobRepository()

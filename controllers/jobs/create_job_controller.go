@@ -9,7 +9,6 @@ import (
 	services "vagas/services/jobs"
 
 	"github.com/gin-gonic/gin"
-	"github.com/go-playground/validator"
 )
 
 func CreateJob(c *gin.Context) {
@@ -17,14 +16,6 @@ func CreateJob(c *gin.Context) {
 
 	if err := c.ShouldBindJSON(&job); err != nil {
 		logger.Log.Error("Error binding job...", err)
-		errors.HandlerError(c, "BAD_REQUEST", err.Error(), http.StatusBadRequest)
-		return
-	}
-
-	validate := validator.New()
-
-	if err := validate.Struct(job); err != nil {
-		logger.Log.Error("Error validating job...", err)
 		errors.HandlerError(c, "BAD_REQUEST", err.Error(), http.StatusBadRequest)
 		return
 	}

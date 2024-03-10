@@ -5,6 +5,8 @@ import (
 	repository "vagas/infra/repository/users"
 	"vagas/models"
 	"vagas/pkg/logger"
+
+	"github.com/go-playground/validator"
 )
 
 type CreateUserService struct {
@@ -13,8 +15,17 @@ type CreateUserService struct {
 
 func (u *CreateUserService) CreateUser(user models.User) (models.User, error) {
 
-	err := u.Repo.CreateTableUsersIfNotExist()
+	validate := validator.New()
+	if err := validate.Struct(user); err != nil {
+		logger.Log.Error("Error validating user...", err)
+		return models.User{}, &errors.AppError{
+			Code:    400,
+			Message: "error validating user: " + err.Error(),
+		}
 
+	}
+
+	err := u.Repo.CreateTableUsersIfNotExist()
 	if err != nil {
 		logger.Log.Errorf("Error creating user table: %v", err)
 		return models.User{}, &errors.AppError{

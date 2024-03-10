@@ -13,6 +13,7 @@ type ApplyJob struct {
 }
 
 func (j *ApplyJob) CreateAplyJobService(aply models.ApplyJob) (models.ApplyJob, error) {
+
 	err := j.Repo.CreateTableAplyIfNotExist()
 	if err != nil {
 		logger.Log.Error("Error creating aply job table...", err)

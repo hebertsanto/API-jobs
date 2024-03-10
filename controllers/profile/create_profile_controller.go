@@ -8,21 +8,13 @@ import (
 	services "vagas/services/profile"
 
 	"github.com/gin-gonic/gin"
-	"github.com/go-playground/validator"
 )
 
 func CreateProfile(c *gin.Context) {
-	profile := models.UserProfile{}
 
+	profile := models.UserProfile{}
 	if err := c.ShouldBindJSON(&profile); err != nil {
 		logger.Log.Infof("Payload received in invalid. Payload: %+v\n", profile)
-		errors.HandlerError(c, "BAD_REQUEST", err.Error(), 400)
-		return
-	}
-
-	validate := validator.New()
-	if err := validate.Struct(profile); err != nil {
-		logger.Log.Infof("error validating user data: %+v\n", profile)
 		errors.HandlerError(c, "BAD_REQUEST", err.Error(), 400)
 		return
 	}

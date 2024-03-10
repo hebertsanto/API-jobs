@@ -9,7 +9,6 @@ import (
 	services "vagas/services/company"
 
 	"github.com/gin-gonic/gin"
-	"github.com/go-playground/validator"
 )
 
 func PulishCompany(c *gin.Context) {
@@ -17,13 +16,6 @@ func PulishCompany(c *gin.Context) {
 
 	if err := c.ShouldBindJSON(&company); err != nil {
 		logger.Log.Infof("Payload received in invalid. Payload: %+v\n", company)
-		errors.HandlerError(c, "BAD_REQUEST", err.Error(), http.StatusBadRequest)
-		return
-	}
-
-	validator := validator.New()
-	if err := validator.Struct(company); err != nil {
-		logger.Log.Infof("error validating company data: %+v\n", company)
 		errors.HandlerError(c, "BAD_REQUEST", err.Error(), http.StatusBadRequest)
 		return
 	}

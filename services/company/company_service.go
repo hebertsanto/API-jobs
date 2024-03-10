@@ -5,6 +5,8 @@ import (
 	repository "vagas/infra/repository/company"
 	"vagas/models"
 	"vagas/pkg/logger"
+
+	"github.com/go-playground/validator"
 )
 
 type CompanyService struct {
@@ -13,8 +15,16 @@ type CompanyService struct {
 
 func (c *CompanyService) CreateCompany(company models.Company) (models.Company, error) {
 
-	err := c.Repo.CreateTableCompaniesIfNotExist()
+	validator := validator.New()
+	if err := validator.Struct(company); err != nil {
+		logger.Log.Error("Error validating model company...", err)
+		return models.Company{}, &errors.AppError{
+			Code:    400,
+			Message: "error validating model company: " + err.Error(),
+		}
+	}
 
+	err := c.Repo.CreateTableCompaniesIfNotExist()
 	if err != nil {
 		logger.Log.Errorf("Error creating company table: %v", err)
 		return models.Company{}, &errors.AppError{

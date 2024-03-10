@@ -6,6 +6,8 @@ import (
 	repository "vagas/infra/repository/jobs"
 	"vagas/models"
 	"vagas/pkg/logger"
+
+	"github.com/go-playground/validator"
 )
 
 type JobService struct {
@@ -13,6 +15,16 @@ type JobService struct {
 }
 
 func (j *JobService) CreateJobService(job models.Jobs) (models.Jobs, error) {
+
+	validate := validator.New()
+	if err := validate.Struct(job); err != nil {
+		logger.Log.Error("Error validating job...", err)
+		return models.Jobs{}, &errors.AppError{
+			Code:    400,
+			Message: "error validating job: " + err.Error(),
+		}
+	}
+
 	err := j.Repo.CreateTableAplyIfNotExist()
 	if err != nil {
 		logger.Log.Error("Error creating job table...", err)

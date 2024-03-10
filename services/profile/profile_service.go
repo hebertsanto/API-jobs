@@ -6,6 +6,8 @@ import (
 	repository "vagas/infra/repository/profile"
 	"vagas/models"
 	"vagas/pkg/logger"
+
+	"github.com/go-playground/validator"
 )
 
 type ProfileService struct {
@@ -14,8 +16,17 @@ type ProfileService struct {
 
 func (p *ProfileService) CreateProfile(profile models.UserProfile) (models.UserProfile, error) {
 
-	err := p.Repo.CreateTableProfileIfNotExist()
+	validate := validator.New()
+	if err := validate.Struct(profile); err != nil {
+		logger.Log.Error("Error validating profile...", err)
+		return models.UserProfile{}, &errors.AppError{
+			Code:    400,
+			Message: "error validating profile: " + err.Error(),
+		}
 
+	}
+
+	err := p.Repo.CreateTableProfileIfNotExist()
 	if err != nil {
 		logger.Log.Errorf("Error creating user table: %v", err)
 		return models.UserProfile{}, &errors.AppError{
